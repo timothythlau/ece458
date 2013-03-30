@@ -1,0 +1,6 @@
+Flask==0.9
+Jinja2==2.6
+MySQL-python==1.2.4
+Werkzeug==0.8.3
+onetimepass==0.1.2
+py-bcrpyt==0.3
