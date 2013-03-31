@@ -98,6 +98,6 @@ def verifyuser(email,token):
 		print "Invalid user entered"
 		return False
 	else:
-		print otp.valid_totp(token, row['secret'])
-		return True
+		#print otp.valid_totp(token, row['secret'])
+		return otp.valid_totp(token, row['secret'])
 	
