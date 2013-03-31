@@ -31,7 +31,9 @@ def login():
 def login_verify():
 	error = None
 	
-	if not session['steponelogin']:
+	try:
+		session['steponelogin']
+	except KeyError:
 		return redirect(url_for('login'))
 	
 	if request.method == 'POST':
@@ -42,8 +44,8 @@ def login_verify():
 			flash('Logged in as ' + session['user'])
 			return redirect(url_for('hello_world'))
 		else:
-			flash('Incorrect two-factor token')
-			return redirect(url_for('login'))
+			error = ('Incorrect two-factor token')
+			return render_template('login.html', error=error)
 	
 	return render_template('login_verify.html', error=error)
 
