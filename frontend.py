@@ -1,6 +1,6 @@
 import db, bcrypt, sys, os, qrcode
 
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash, send_from_directory
 app = Flask(__name__)
 
 @app.route('/')
@@ -71,14 +71,11 @@ def new_user():
 				error = 'Password too short, must be 6 or more characters'
 			
 			elif request.form['password'] == request.form['passwordconfirm']:
-				createstatus, usersec, imgpath = db.createuser(request.form['username'], request.form['password'])
+				createstatus, usersec = db.createuser(request.form['username'], request.form['password'])
 			
 				if createstatus == True:
-					#userqrkey = 'otpauth://totp/' + request.form['username'] + '?secret=' + usersec
-					#qrimg = qrcode.make(userqrkey)
+					imgpath = 'http://localhost:5000/qr/' + usersec + '.png'
 					return render_template('new_user_created.html', user=request.form['username'], secret=usersec, imgpath=imgpath)
-					
-					#return redirect(url_for('login'))
 				
 				else:
 					error = createstatus
@@ -89,6 +86,10 @@ def new_user():
 				prevname = request.form['username']
 	
 	return render_template('new_user.html', error=error, prevname=prevname)
+	
+@app.route('/qr/<secret>')
+def get_img(secret):
+	return send_from_directory('qrcodes', secret)
     
 if __name__ == '__main__':
 	app.debug = True

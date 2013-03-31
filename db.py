@@ -61,13 +61,13 @@ def createuser(email,pw):
 	
 	if status == False:
 		print "MySQL error"
-		return "MySQL error", -1, -1
+		return "MySQL error", -1
 	else:
 		qrimg = qrcode.make('otpauth://totp/' + email + '?secret=' + secret)
-		qrimg.save('static/qrcodes/' + secret +'.png')
+		qrimg.save('qrcodes/' + secret +'.png')
 		
 		print "User successfully added"
-		return True, secret, '/static/qrcodes/' + secret +'.png'
+		return True, secret
 
 #check for valid username and password, returns True if valid, False if not valid, None for SQL error
 def login(email,pw):
