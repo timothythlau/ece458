@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>Create New User</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+  <form action="{{ url_for('new_user') }}" method=post>
+    <dl>
+      <dt>Username:
+      {% if prevname %}
+      <dd><input type=text name=username value={{ prevname }}>
+      {% else %}
+      <dd><input type=text name=username>
+      {% endif %}
+      <dt>Password:
+      <dd><input type=password name=password>
+      <dt>Confirm Password:
+      <dd><input type=password name=passwordconfirm>
+      <dd><input type=submit value=Submit>
+    </dl>
+  </form>
+{% endblock %}

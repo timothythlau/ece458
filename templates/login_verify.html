@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>Two-Factor Login Verification</h2>
+  <p>To login, please enter the token specified for your account as displayed in Google Authenticator.</p>
+  
+  <form action="{{ url_for('login_verify') }}" method=post>
+    <dl>
+      <dt>Token:
+      <dd><input type=password name=token>
+      <dd><input type=submit value=Verify>
+    </dl>
+  </form>
+  
+  
+{% endblock %}

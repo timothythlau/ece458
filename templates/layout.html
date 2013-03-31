@@ -1,0 +1,18 @@
+<!doctype html>
+<title>ECE 458 Project - Secure Polling App</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+<div class=page>
+<h1>Secure Polling App</h1>
+<div class=metanav>
+{% if not session.steptwologin %}
+<a href="{{ url_for('new_user') }}">new user</a>
+<a href="{{ url_for('login') }}">log in</a>
+{% else %}
+<a href="{{ url_for('logout') }}">log out</a>
+{% endif %}
+</div>
+{% for message in get_flashed_messages() %}
+<div class=flash>{{ message }}</div>
+{% endfor %}
+{% block body %}{% endblock %}
+</div>

@@ -1,6 +1,6 @@
 import MySQLdb
 import onetimepass as otp
-import sys, string, random, base64
+import sys, string, random, base64, bcrypt
 
 #DB connection settings
 conhost = 'localhost'
@@ -33,39 +33,57 @@ class DB:
 			status = False
 		return cursor, status
 
-#create user and assign random secret for two-factor authentication
-def createuser(email,pw):
+#check if user already exists
+def checkuser(email):
 	db = DB()
 	
 	cur, status = db.query("select email from Users where email=%s",(email,))
 	
 	if status == False:
 		print "MySQL error"
-		return False
+		return "MySQL error"
 	
 	#check for duplicate users
 	if cur.fetchone() != None:
 		print "User exists already"
-		return False
+		return "Username exists already, please choose different username"
+	else:
+		return True
+
+#create user and assign random secret for two-factor authentication
+def createuser(email,pw):
+	db = DB()
 	
-	#assign secret to user
+	#assign secret to user, hash pw, insert into db
 	secret = base64.b32encode(''.join(random.choice(string.replace(string.ascii_uppercase + string.digits, '8', '')) for x in range(10)))
-	cur, status = db.query("insert into Users(email,password,secret) values (%s,%s,%s)",(email,pw,secret))
+	hashpw = bcrypt.hashpw(pw, bcrypt.gensalt())
+	cur, status = db.query("insert into Users(email,password,secret) values (%s,%s,%s)",(email,hashpw,secret))
 	
 	if status == False:
 		print "MySQL error"
-		return False
+		return "MySQL error", -1
 	else:
 		print "User successfully added"
-		return True
+		return True, secret
 
-#get bcrypted password from DB to compare
-def getpwhash(email):
+#check for valid username and password, returns True if valid, False if not valid, None for SQL error
+def login(email,pw):
+
+	if pw == '' or email == '':
+		return False;
+	
 	db = DB()
 	cur, status = db.query("select password from Users where email=%s",(email,))
 	
 	if status == True:
-		return cur.fetchone()['password']
+		row = cur.fetchone()
+		
+		if row != None:
+			dbpw = row['password']
+			if dbpw == bcrypt.hashpw(pw,dbpw):
+				return True
+		
+		return False
 	else:
 		return None
 
