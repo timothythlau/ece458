@@ -1,4 +1,4 @@
-import db, bcrypt, sys, os
+import db, bcrypt, sys, os, qrcode
 
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 app = Flask(__name__)
@@ -71,12 +71,12 @@ def new_user():
 				error = 'Password too short, must be 6 or more characters'
 			
 			elif request.form['password'] == request.form['passwordconfirm']:
-				createstatus, usersec = db.createuser(request.form['username'], request.form['password'])
+				createstatus, usersec, imgpath = db.createuser(request.form['username'], request.form['password'])
 			
 				if createstatus == True:
 					#userqrkey = 'otpauth://totp/' + request.form['username'] + '?secret=' + usersec
 					#qrimg = qrcode.make(userqrkey)
-					return render_template('new_user_created.html', user=request.form['username'], secret=usersec)
+					return render_template('new_user_created.html', user=request.form['username'], secret=usersec, imgpath=imgpath)
 					
 					#return redirect(url_for('login'))
 				

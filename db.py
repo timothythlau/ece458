@@ -1,6 +1,6 @@
 import MySQLdb
 import onetimepass as otp
-import sys, string, random, base64, bcrypt
+import sys, string, random, base64, bcrypt, qrcode
 
 #DB connection settings
 conhost = 'localhost'
@@ -61,10 +61,13 @@ def createuser(email,pw):
 	
 	if status == False:
 		print "MySQL error"
-		return "MySQL error", -1
+		return "MySQL error", -1, -1
 	else:
+		qrimg = qrcode.make('otpauth://totp/' + email + '?secret=' + secret)
+		qrimg.save('static/qrcodes/' + secret +'.png')
+		
 		print "User successfully added"
-		return True, secret
+		return True, secret, '/static/qrcodes/' + secret +'.png'
 
 #check for valid username and password, returns True if valid, False if not valid, None for SQL error
 def login(email,pw):
