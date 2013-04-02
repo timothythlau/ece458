@@ -1,6 +1,7 @@
 import MySQLdb
 import onetimepass as otp
 import sys, string, random, base64, bcrypt, qrcode
+from datetime import datetime
 
 #DB connection settings
 conhost = 'localhost'
@@ -103,4 +104,53 @@ def verifyuser(email,token):
 	else:
 		#print otp.valid_totp(token, row['secret'])
 		return otp.valid_totp(token, row['secret'])
+
+#create poll
+def createPoll(title, startDate, endDate):
+    db = DB()
+    cur, status = db.query("INSERT INTO polls(title, startDate, endDate) VALUES (%s, %s, %s)", (title, startDate.strftime('%Y-%m-%d %H:%M:%S'), endDate.strftime('%Y-%m-%d %H:%M:%S')))
+
+    if status == False:
+        print "MySQL error"
+        return "MySQL error"
+    else:
+        print "Poll successfully added"
+        return True
+
+#create option
+def createOption(text):
+    db = DB()
+    cur, status = db.query("INSERT INTO options(text) VALUES (%s)", (text))
 	
+    if status == False:
+        print "MySQL error"
+        return "MySQL error"
+    else:
+        print "Option successfully added"
+        return True
+
+
+#create poll option
+def createPollOption(pollId, optionId):
+    db = DB()
+    cur, status = db.query("INSERT INTO poll_option(pollId, optionId) VALUES (%s, %s)", (pollId, optionId))
+	
+    if status == False:
+        print "MySQL error"
+        return "MySQL error"
+    else:
+        print "Poll option successfully added"
+        return True
+
+#create vote
+def createVote(pollOptionId, userId):
+    db = DB()
+    currentTime = datetime.now()
+    cur, status = db.query("INSERT INTO votes(pollOptionId, userId, timestamp) VALUES (%s, %s, %s)", (pollOptionId, userId, currentTime.strftime('%Y-%m-%d %H:%M:%S')))
+
+    if status == False:
+        print "MySQL error"
+        return "MySQL error"
+    else:
+        print "Vote successfully added"
+        return True
