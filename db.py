@@ -1,6 +1,6 @@
 import MySQLdb
 import onetimepass as otp
-import sys, string, random, base64, bcrypt, qrcode
+import sys, string, random, base64, bcrypt, qrcode, crypt
 from datetime import datetime
 
 #DB connection settings
@@ -108,7 +108,7 @@ def verifyuser(email,token):
 #create poll
 def createPoll(title, startDate, endDate):
     db = DB()
-    cur, status = db.query("INSERT INTO polls(title, startDate, endDate) VALUES (%s, %s, %s)", (title, startDate.strftime('%Y-%m-%d %H:%M:%S'), endDate.strftime('%Y-%m-%d %H:%M:%S')))
+    cur, status = db.query("INSERT INTO polls(title, startDate, endDate, salt) VALUES (%s, %s, %s, SUBSTRING(MD5(RAND()), -16))", (title, startDate.strftime('%Y-%m-%d %H:%M:%S'), endDate.strftime('%Y-%m-%d %H:%M:%S')))
 
     if status == False:
         print "MySQL error"
@@ -117,10 +117,21 @@ def createPoll(title, startDate, endDate):
         print "Poll successfully added"
         return True
 
+#read poll salt
+def readPollSalt(pollId):
+    db = DB()
+    cur, status = db.query("SELECT salt FROM polls WHERE Id='%s'", (pollId))
+    row = cur.fetchone()
+
+    if row == None:
+        return False
+    else:
+        return row['salt']
+
 #create option
 def createOption(pollId, text):
     db = DB()
-    cur, status = db.query("INSERT INTO options(pollId, text) VALUES (%s)", (pollId, text))
+    cur, status = db.query("INSERT INTO options(pollId, text) VALUES (%s, %s)", (pollId, text))
 	
     if status == False:
         print "MySQL error"
@@ -133,11 +144,47 @@ def createOption(pollId, text):
 def createVote(pollId, optionId, userId):
     db = DB()
     currentTime = datetime.now()
-    cur, status = db.query("INSERT INTO votes(pollOptionId, userId, timestamp) VALUES (%s, %s, %s)", (pollId, optionId, userId, currentTime.strftime('%Y-%m-%d %H:%M:%S')))
-
-    if status == False:
-        print "MySQL error"
-        return "MySQL error"
+    if verifyVote(pollId, userId) == False:
+        cur, status = db.query("INSERT INTO votes(pollId, optionId, userId, timestamp) VALUES (%s, %s, ENCRYPT(%s, %s), %s)", (pollId, optionId, userId, readPollSalt(pollId), currentTime.strftime('%Y-%m-%d %H:%M:%S')))
+        if status == False:
+            print "MySQL error"
+            return "MySQL error"
+        else:
+            print "Vote successfully added"
+            return True
     else:
-        print "Vote successfully added"
-        return True
+        return False
+
+#verify vote
+def verifyVote(pollId, userId):
+    db = DB()
+    cryptUserId = crypt.crypt(str(userId), readPollSalt(pollId))
+    print cryptUserId
+    cur, status = db.query("SELECT count(*) AS votecount FROM votes WHERE pollId=%s and userId=%s", (pollId, str(cryptUserId)))
+    res = cur.fetchone()
+    
+    if res['votecount'] > 0:
+        return True;
+    else:
+        return False;
+
+#get polls
+def getPolls():
+    db = DB()
+    cur, status = db.query("SELECT title FROM polls", None)
+    entries = [dict(title=row['title']) for row in cur.fetchall()]
+    return entries
+
+#get poll
+def getPoll(pollId):
+    db = DB()
+    cur, status = db.query("SELECT title FROM polls WHERE Id=%s", (pollId))
+    poll = cur.fetchone()
+    return poll
+
+#get options
+def getOptions(pollId):
+    db = DB()
+    cur, status = db.query("SELECT text FROM options WHERE pollId=%s", (pollId))
+    options = [dict(text=row['text']) for row in cur.fetchall()]
+    return options

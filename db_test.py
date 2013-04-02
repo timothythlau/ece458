@@ -1,4 +1,5 @@
 import db, bcrypt, sys
+from datetime import datetime
 
 user = 'testuser10'
 pw = 'testpw10'
@@ -17,3 +18,9 @@ else:
 	print "Incorrect password entered"
 '''
 db.verifyuser(user, sys.argv[1])
+db.createPoll('testPoll', datetime.now(), datetime.now())
+db.createOption(1, 'option1')
+db.createOption(1, 'option2')
+db.createOption(1, 'option3')
+db.createVote(1, 1, 1)
+print db.verifyVote(1, 2)

@@ -92,6 +92,14 @@ def new_user():
 @app.route('/qr/<secret>')
 def get_img(secret):
 	return send_from_directory('qrcodes', secret)
+
+@app.route('/show_polls', methods=['GET', 'POST'])
+def getPollListing():
+    return render_template('show_polls.html', entries=db.getPolls())
+
+@app.route('/poll/<int:poll_id>')
+def showPoll(poll_id):
+    return render_template('poll.html', poll=db.getPoll(poll_id), options=db.getOptions(poll_id))
     
 if __name__ == '__main__':
 	app.debug = True

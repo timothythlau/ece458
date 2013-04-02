@@ -57,8 +57,9 @@ CREATE TABLE `polls` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `title` varchar(64) DEFAULT NULL,
   `isOpen` tinyint(1) DEFAULT NULL,
-  `startDate` date DEFAULT NULL,
-  `endDate` date DEFAULT NULL,
+  `startDate` datetime DEFAULT NULL,
+  `endDate` datetime DEFAULT NULL,
+  `salt` varchar(16) NOT NULL,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -74,8 +75,8 @@ CREATE TABLE `votes` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
   `pollId` int(11) NOT NULL,
   `optionId` int(11) NOT NULL,
-  `userId` int(11) NOT NULL,
-  `timestamp` date NOT NULL,
+  `userId` varchar(16) NOT NULL,
+  `timestamp` datetime NOT NULL,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
