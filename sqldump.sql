@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.5.29, for Linux (i686)
 --
--- Host: localhost    Database: test
+-- Host: localhost    Database: ece458
 -- ------------------------------------------------------
 -- Server version	5.5.29
 
@@ -40,22 +40,8 @@ DROP TABLE IF EXISTS `options`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `options` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
-  `text` varchar(128) DEFAULT NULL,
-  PRIMARY KEY (`Id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `poll_option`
---
-
-DROP TABLE IF EXISTS `poll_option`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `poll_option` (
-  `Id` int(11) NOT NULL AUTO_INCREMENT,
   `pollId` int(11) NOT NULL,
-  `optionId` int(11) NOT NULL,
+  `text` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -86,7 +72,8 @@ DROP TABLE IF EXISTS `votes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `votes` (
   `Id` int(11) NOT NULL AUTO_INCREMENT,
-  `pollOptionId` int(11) NOT NULL,
+  `pollId` int(11) NOT NULL,
+  `optionId` int(11) NOT NULL,
   `userId` int(11) NOT NULL,
   `timestamp` date NOT NULL,
   PRIMARY KEY (`Id`)
@@ -102,4 +89,4 @@ CREATE TABLE `votes` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2013-04-02 11:43:40
+-- Dump completed on 2013-04-02 16:47:34

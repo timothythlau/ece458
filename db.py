@@ -118,9 +118,9 @@ def createPoll(title, startDate, endDate):
         return True
 
 #create option
-def createOption(text):
+def createOption(pollId, text):
     db = DB()
-    cur, status = db.query("INSERT INTO options(text) VALUES (%s)", (text))
+    cur, status = db.query("INSERT INTO options(pollId, text) VALUES (%s)", (pollId, text))
 	
     if status == False:
         print "MySQL error"
@@ -129,24 +129,11 @@ def createOption(text):
         print "Option successfully added"
         return True
 
-
-#create poll option
-def createPollOption(pollId, optionId):
-    db = DB()
-    cur, status = db.query("INSERT INTO poll_option(pollId, optionId) VALUES (%s, %s)", (pollId, optionId))
-	
-    if status == False:
-        print "MySQL error"
-        return "MySQL error"
-    else:
-        print "Poll option successfully added"
-        return True
-
 #create vote
-def createVote(pollOptionId, userId):
+def createVote(pollId, optionId, userId):
     db = DB()
     currentTime = datetime.now()
-    cur, status = db.query("INSERT INTO votes(pollOptionId, userId, timestamp) VALUES (%s, %s, %s)", (pollOptionId, userId, currentTime.strftime('%Y-%m-%d %H:%M:%S')))
+    cur, status = db.query("INSERT INTO votes(pollOptionId, userId, timestamp) VALUES (%s, %s, %s)", (pollId, optionId, userId, currentTime.strftime('%Y-%m-%d %H:%M:%S')))
 
     if status == False:
         print "MySQL error"
