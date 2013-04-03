@@ -110,6 +110,10 @@ def showPoll(poll_id):
         
     return render_template('poll.html', error=error, success=checkstatus, poll_id=poll_id, poll=db.getPoll(poll_id), options=db.getOptions(poll_id))
     
+@app.route('/result/<int:poll_id>', methods=['GET'])
+def showResult(poll_id):
+    return render_template('result.html', results=db.getPollResults(poll_id), votes=db.getPollHistory(poll_id))
+
 if __name__ == '__main__':
 	app.debug = True
 	app.secret_key = os.urandom(24)

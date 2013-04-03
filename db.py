@@ -131,7 +131,7 @@ def readPollSalt(pollId):
 #create option
 def createOption(pollId, text):
     db = DB()
-    cur, status = db.query("INSERT INTO options(pollId, text) VALUES (%s, %s)", (pollId, text))
+    cur, status = db.query("INSERT INTO options(pollId, num, text) VALUES (%s, %s, %s)", (pollId, numOptions(pollId), text))
 	
     if status == False:
         print "MySQL error"
@@ -139,6 +139,12 @@ def createOption(pollId, text):
     else:
         print "Option successfully added"
         return True
+
+#get options in poll
+def numOptions(pollId):
+    db = DB()
+    cur, status = db.query("SELECT count(*) AS count FROM options WHERE pollId=%s", (pollId))
+    return cur.fetchone()['count']+1
 
 #create vote
 def createVote(pollId, optionId, userId):
@@ -171,7 +177,7 @@ def verifyVote(pollId, userId):
 def getPolls():
     db = DB()
     cur, status = db.query("SELECT title, Id FROM polls", None)
-    entries = [dict(title=row['title'], Id=row['Id']) for row in cur.fetchall()]
+    entries = cur.fetchall()
     return entries
 
 #get poll
@@ -185,5 +191,19 @@ def getPoll(pollId):
 def getOptions(pollId):
     db = DB()
     cur, status = db.query("SELECT text, Id FROM options WHERE pollId=%s", (pollId))
-    options = [dict(text=row['text'], Id=row['Id']) for row in cur.fetchall()]
+    options = cur.fetchall()
     return options
+
+#get poll results
+def getPollResults(pollId):
+    db = DB()
+    cur, status = db.query("SELECT votesCount.count, o.num, o.text FROM (SELECT v.optionId, COUNT(v.optionId) AS count FROM votes v WHERE v.pollId=%s GROUP BY v.optionId) AS votesCount LEFT JOIN options o ON votesCount.optionId = o.Id", (pollId))
+    entries = cur.fetchall()
+    return entries
+
+#get poll votes
+def getPollHistory(pollId):
+    db = DB()
+    cur, status = db.query("SELECT o.num, v.userId, v.timestamp FROM votes v LEFT JOIN options o ON v.optionId = o.Id WHERE v.pollId=%s ORDER BY timestamp DESC", (pollId))
+    entries = cur.fetchall()
+    return entries

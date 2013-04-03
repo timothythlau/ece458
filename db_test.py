@@ -17,10 +17,16 @@ if returnpw == bcrypt.hashpw(pw,returnpw):
 else:
 	print "Incorrect password entered"
 '''
-db.verifyuser(user, sys.argv[1])
 db.createPoll('testPoll', datetime.now(), datetime.now())
 db.createOption(1, 'option1')
 db.createOption(1, 'option2')
 db.createOption(1, 'option3')
+db.createPoll('testPoll2', datetime.now(), datetime.now())
+db.createOption(2, 'option1')
+db.createOption(2, 'option2')
+db.createOption(2, 'option3')
 db.createVote(1, 1, 1)
+db.createVote(1, 2, 2)
+db.createVote(1, 1, 3)
+db.createVote(1, 3, 4)
 print db.verifyVote(1, 2)
