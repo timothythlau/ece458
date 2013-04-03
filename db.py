@@ -159,7 +159,6 @@ def createVote(pollId, optionId, userId):
 def verifyVote(pollId, userId):
     db = DB()
     cryptUserId = crypt.crypt(str(userId), readPollSalt(pollId))
-    print cryptUserId
     cur, status = db.query("SELECT count(*) AS votecount FROM votes WHERE pollId=%s and userId=%s", (pollId, str(cryptUserId)))
     res = cur.fetchone()
     
@@ -171,8 +170,8 @@ def verifyVote(pollId, userId):
 #get polls
 def getPolls():
     db = DB()
-    cur, status = db.query("SELECT title FROM polls", None)
-    entries = [dict(title=row['title']) for row in cur.fetchall()]
+    cur, status = db.query("SELECT title, Id FROM polls", None)
+    entries = [dict(title=row['title'], Id=row['Id']) for row in cur.fetchall()]
     return entries
 
 #get poll
@@ -185,6 +184,6 @@ def getPoll(pollId):
 #get options
 def getOptions(pollId):
     db = DB()
-    cur, status = db.query("SELECT text FROM options WHERE pollId=%s", (pollId))
-    options = [dict(text=row['text']) for row in cur.fetchall()]
+    cur, status = db.query("SELECT text, Id FROM options WHERE pollId=%s", (pollId))
+    options = [dict(text=row['text'], Id=row['Id']) for row in cur.fetchall()]
     return options

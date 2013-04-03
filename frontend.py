@@ -93,13 +93,22 @@ def new_user():
 def get_img(secret):
 	return send_from_directory('qrcodes', secret)
 
-@app.route('/show_polls', methods=['GET', 'POST'])
+@app.route('/show_polls', methods=['GET'])
 def getPollListing():
     return render_template('show_polls.html', entries=db.getPolls())
 
-@app.route('/poll/<int:poll_id>')
+@app.route('/poll/<int:poll_id>', methods=['GET', 'POST'])
 def showPoll(poll_id):
-    return render_template('poll.html', poll=db.getPoll(poll_id), options=db.getOptions(poll_id))
+    error = None
+    checkstatus = None
+    if request.method == 'POST':
+        option = request.form['option']   
+        checkstatus = db.createVote(poll_id, option, 104)
+
+        if checkstatus == False:
+            error = 'Vote has already been cast'
+        
+    return render_template('poll.html', error=error, success=checkstatus, poll_id=poll_id, poll=db.getPoll(poll_id), options=db.getOptions(poll_id))
     
 if __name__ == '__main__':
 	app.debug = True
