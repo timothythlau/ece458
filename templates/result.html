@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>Polls</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+    <table border="1">
+    <tr>
+    <th>Option</th>
+    <th>Description</th>
+    <th>Votes</th>
+    <th>Percent</th>
+    </tr>
+    {% for result in results %}
+    <tr>
+    <td>{{ result.num }}</td>
+    <td>{{ result.text }}</td>
+    <td>{{ result.count }}</td>
+    <td>{{ result.percent }}</td>
+    </tr>
+    {% endfor %}
+    
+    </table>
+    <table border="1">
+    <tr>
+    <th>Timestamp</th>
+    <th>User</th>
+    <th>Option</th>
+    </tr>
+    {% for vote in votes %}
+    <tr>
+    <td>{{ vote.timestamp }}</td>
+    <td>{{ vote.userId }}</td>
+    <td>{{ vote.num }}</td>
+    </tr>
+    {% endfor %}
+{% endblock %}

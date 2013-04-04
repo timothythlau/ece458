@@ -197,8 +197,12 @@ def getOptions(pollId):
 #get poll results
 def getPollResults(pollId):
     db = DB()
+    cur, status = db.query("SELECT COUNT(*) AS total FROM votes WHERE pollId=%s", (pollId))
+    total = cur.fetchone()['total']
     cur, status = db.query("SELECT votesCount.count, o.num, o.text FROM (SELECT v.optionId, COUNT(v.optionId) AS count FROM votes v WHERE v.pollId=%s GROUP BY v.optionId) AS votesCount LEFT JOIN options o ON votesCount.optionId = o.Id", (pollId))
     entries = cur.fetchall()
+    for rows in entries:
+        rows['percent']=100 * float(rows['count'])/float(total) 
     return entries
 
 #get poll votes

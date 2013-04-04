@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block body %}
+  <h2>Polls</h2>
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }}{% endif %}
+    <ul>
+    {% for entry in entries %}
+        <li><a href={{ url_for('showPoll', poll_id=entry.Id ) }}>{{ entry.title }}</a>
+    {% endfor %}
+    </ul>
+{% endblock %}
