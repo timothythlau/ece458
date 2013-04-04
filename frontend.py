@@ -31,21 +31,23 @@ def hello_world():
 def login():
 	error = None
 	if request.method == 'POST':
-		loginstatus, userid = db.login(request.form['username'],request.form['password'])
+		loginstatus, userid, acttype = db.login(request.form['username'],request.form['password'])
 		if loginstatus == True:
 			session['steponelogin'] = True
 			session['userid'] = userid
+			session['account'] = acttype
 			return redirect(url_for('login_verify'))
 		elif loginstatus == False:
 			error = 'Invalid e-mail or password'
 		else:
 			error = 'Login mechanism failed'
-
-	if checksession(1):
+	try:
 		session.pop('steponelogin', None)
 		session.pop('userid', None)
-	if checksession(2):
+		session.pop('account', None)
 		session.pop('steptwologin', None)
+	except KeyError:
+		pass
 
 	return render_template('login.html', error=error)
 
