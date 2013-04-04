@@ -5,9 +5,6 @@
   {% if success %}<p><strong>Thank you for voting!</strong>
   {% else %}  
     <h3>Title: </h3>{{ poll.title }}
-    <h3>Open: </h3>{{ poll.isOpen }}
-    <h3>Start Date: </h3>{{ poll.startDate }}
-    <h3>End Date: </h3>{{ poll.endDate }}
   <h2>Choices</h2>
     <form action="{{ url_for('showPoll', poll_id=poll_id ) }}" method=post>
         {% for option in options %}

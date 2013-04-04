@@ -151,6 +151,10 @@ def showResult(poll_id):
 	flash('Please login to access polls functionality')	    
 	return redirect(url_for('login'))
 
+@app.route('/create_poll', methods=['GET', 'POST'])
+def createPoll():
+    return render_template('create_poll.html')
+
 if __name__ == '__main__':
 	app.debug = debug
 	app.secret_key = os.urandom(24)
