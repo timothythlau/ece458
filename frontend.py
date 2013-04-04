@@ -153,7 +153,19 @@ def showResult(poll_id):
 
 @app.route('/create_poll', methods=['GET', 'POST'])
 def createPoll():
-    return render_template('create_poll.html')
+    if checksession(2):
+        checkstatus = None
+        if request.method == 'POST':
+            pollText = request.form['pollText']
+            checkstatus = db.createPoll(pollText)
+            
+            if checkstatus == False:
+                error = 'Error creating poll'
+
+        return render_template('create_poll.html', error=error, success=checkstatus)
+
+	flash('Please login to access polls functionality')   
+   	return redirect(url_for('login'))
 
 if __name__ == '__main__':
 	app.debug = debug

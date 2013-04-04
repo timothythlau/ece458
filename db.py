@@ -106,8 +106,10 @@ def verifyuser(userid,token):
 		return otp.valid_totp(token, row['secret']), row['email']
 
 #create poll
-def createPoll(title, startDate, endDate):
+def createPoll(title):
     db = DB()
+    startDate = datetime.now()
+    endDate = datetime.now()
     cur, status = db.query("INSERT INTO polls(title, startDate, endDate, salt) VALUES (%s, %s, %s, SUBSTRING(MD5(RAND()), -16))", (title, startDate.strftime('%Y-%m-%d %H:%M:%S'), endDate.strftime('%Y-%m-%d %H:%M:%S')))
 
     if status == False:
