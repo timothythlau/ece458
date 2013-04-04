@@ -58,7 +58,7 @@ def createuser(email,pw):
 	#assign secret to user, hash pw, insert into db
 	secret = base64.b32encode(''.join(random.choice(string.replace(string.ascii_uppercase + string.digits, '8', '')) for x in range(10)))
 	hashpw = bcrypt.hashpw(pw, bcrypt.gensalt())
-	cur, status = db.query("insert into Users(email,password,secret) values (%s,%s,%s)",(email,hashpw,secret))
+	cur, status = db.query("insert into Users(email,password,secret,type) values (%s,%s,%s,'user')",(email,hashpw,secret))
 	
 	if status == False:
 		print "MySQL error"
@@ -74,10 +74,10 @@ def createuser(email,pw):
 def login(email,pw):
 
 	if pw == '' or email == '':
-		return False, None;
+		return False, None, None;
 	
 	db = DB()
-	cur, status = db.query("select Id,password from Users where email=%s",(email,))
+	cur, status = db.query("select Id,password,type from Users where email=%s",(email,))
 	
 	if status == True:
 		row = cur.fetchone()
@@ -85,11 +85,11 @@ def login(email,pw):
 		if row != None:
 			dbpw = row['password']
 			if dbpw == bcrypt.hashpw(pw,dbpw):
-				return True, row['Id']
+				return True, row['Id'], row['type']
 		
-		return False, None
+		return False, None, None
 	else:
-		return None, None
+		return None, None, None
 
 #verify two-factor token
 def verifyuser(userid,token):
