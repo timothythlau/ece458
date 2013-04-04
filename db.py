@@ -74,10 +74,10 @@ def createuser(email,pw):
 def login(email,pw):
 
 	if pw == '' or email == '':
-		return False;
+		return False, None;
 	
 	db = DB()
-	cur, status = db.query("select password from Users where email=%s",(email,))
+	cur, status = db.query("select Id,password from Users where email=%s",(email,))
 	
 	if status == True:
 		row = cur.fetchone()
@@ -85,25 +85,25 @@ def login(email,pw):
 		if row != None:
 			dbpw = row['password']
 			if dbpw == bcrypt.hashpw(pw,dbpw):
-				return True
+				return True, row['Id']
 		
-		return False
+		return False, None
 	else:
-		return None
+		return None, None
 
 #verify two-factor token
-def verifyuser(email,token):
+def verifyuser(userid,token):
 	db = DB()
-	cur, status = db.query("select secret from Users where email=%s",(email,))
+	cur, status = db.query("select email, secret from Users where Id=%s",(userid,))
 	row = cur.fetchone()
 
 	if row == None:
 		#should never happen
 		print "Invalid user entered"
-		return False
+		return False, None
 	else:
 		#print otp.valid_totp(token, row['secret'])
-		return otp.valid_totp(token, row['secret'])
+		return otp.valid_totp(token, row['secret']), row['email']
 
 #create poll
 def createPoll(title, startDate, endDate):
