@@ -31,10 +31,10 @@ def hello_world():
 def login():
 	error = None
 	if request.method == 'POST':
-		loginstatus = db.login(request.form['username'],request.form['password'])
+		loginstatus, userid = db.login(request.form['username'],request.form['password'])
 		if loginstatus == True:
 			session['steponelogin'] = True
-			session['user'] = request.form['username']
+			session['userid'] = userid
 			return redirect(url_for('login_verify'))
 		elif loginstatus == False:
 			error = 'Invalid e-mail or password'
@@ -43,7 +43,7 @@ def login():
 
 	if checksession(1):
 		session.pop('steponelogin', None)
-		session.pop('user', None)
+		session.pop('userid', None)
 	if checksession(2):
 		session.pop('steptwologin', None)
 
@@ -57,11 +57,11 @@ def login_verify():
 		return redirect(url_for('login'))
 	
 	if request.method == 'POST':
-		verifystatus = db.verifyuser(session['user'],request.form['token'])
+		verifystatus, user = db.verifyuser(session['userid'],request.form['token'])
 		
 		if verifystatus:
 			session['steptwologin'] = True
-			flash('Logged in as ' + session['user'])
+			flash('Logged in as ' + user)
 			return redirect(url_for('hello_world'))
 		else:
 			error = ('Incorrect two-factor token')
@@ -73,7 +73,7 @@ def login_verify():
 def logout():
     session.pop('steponelogin', None)
     session.pop('steptwologin', None)
-    session.pop('user', None)
+    session.pop('userid', None)
     flash('You were logged out')
     return redirect(url_for('hello_world'))
     
